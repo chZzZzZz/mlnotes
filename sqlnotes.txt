@@ -1,0 +1,48 @@
+public static SqlConnection conn = new SqlConnection("server=.;database=MColor;uid=" + entername + ";pwd=" + entercode);//链接数据库
+//显示总数据库表
+            SqlDataAdapter adapter_All = new SqlDataAdapter("select * from SourceData", QuanJu.conn);//连接数据库//SourceData为数据库中的表格
+            DataSet set_All = new DataSet();
+            adapter_All.Fill(set_All, "conn");
+            dGV_All.ReadOnly = false;
+            dGV_All.DataSource = set_All.Tables[0];
+//新建数据库语句（在查询分析器里执行）
+IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = 'studb' )
+	DROP DATABASE studb
+GO
+
+CREATE DATABASE studb ON
+    (NAME='studb_data.dat',
+     FILENAME='D:\Microsoft SQL Server\MSSQL\Data\studb_data.mdf',
+     SIZE = 5,
+     MAXSIZE = 10,
+     FILEGROWTH = 1)
+LOG ON
+     (NAME='studb_log.log',
+     FILENAME='D:\Microsoft SQL Server\MSSQL\Data\studb_log.ldf',
+     SIZE = 1,
+     FILEGROWTH = 10%)
+	 //在数据库studb中新建表并设置主键和外键
+	 use studb
+CREATE TABLE S
+     (SNO CHAR(6)  PRIMARY KEY,
+     SNAME CHAR(8)  NOT NULL,
+     AGE SMALLINT,
+     SEX CHAR(1),
+     DNAME VARCHAR(12));
+
+CREATE TABLE C
+     (CNO CHAR(2) NOT NULL,
+     CNAME VARCHAR(24) NOT NULL,
+     CREDIT SMALLINT,
+     PRE_CNO CHAR(2),
+     PRIMARY KEY(CNO));
+
+CREATE TABLE SC
+     (SNO CHAR(6) NOT NULL,
+      CNO CHAR(2) NOT NULL,
+      SCORE SMALLINT,
+      PRIMARY KEY(SNO,CNO),
+      FOREIGN KEY(SNO)
+                  REFERENCES S ON DELETE CASCADE,
+      FOREIGN KEY(CNO)
+                  REFERENCES C ON DELETE NO ACTION)
