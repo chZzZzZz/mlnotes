@@ -1,0 +1,40 @@
+#git使用
+1.安装git：sudo apt-get install git
+2.创建github账号，包括用户名，邮箱
+3. 创建ssh：ssh-keygen -t rsa -C "18829354152@163.com"
+4.在自己的github页面找到SSH Keys设置，titile随便填，将本地用户隐藏文件夹。ssh/is_rsa.pub里的字符复制到add ssh key里。
+5.测试ssh是否成功：ssh -T git@github.com
+6.配置git的配置文件（用户名和邮箱一定要与自己注册的github账号用户名和邮箱相同）：
+git config --global user.name "your name" 
+git config --global user.email "your email" 
+7.在github上新建一个repository
+8.利用git从本地上传到github
+8.1进入所要上传文件的目录输入：git init
+8.2创建本地仓库：git remote add origin git@github.com:yourName/yourRepo.git 
+上传文件（3条指令）：
+git add xxx
+git commit -m "提交信息"
+git push -u origin master
+9.从github克隆项目到本地
+在本地建立接受代码的文件夹，cd到这个目录，所使用的远程主机自动被个i他命名为origin
+如果想用其他主机名，需要用个git clone命令的-o选项指定。
+代码$git clone -o github https://github.com/xxxxxx(仓库地址) 注：该代码已将远程主机名改为github
+10.github创建新分支
+在本地创建新的分支 git branch newbranch
+切换到新的分支 git checkout newbranch
+将新的分支推送到github git push origin newbranch
+在本地删除一个分支： git branch -d newbranch
+在github远程端删除一个分支： git push origin :newbranch (分支名前的冒号代表删除)
+复制仓库的Https，使用命令git clone https://github.com/PentonBin/Demo.git（例子）
+11.查看远程主机名和fetch push地址：git remote -v
+12.git clone和git pull区别：
+git clone是将整个版本库复制到本地，git pull=git fetch + git merge即从远程主机获取最新版本branch分支并合并到本地。 
+======================
+#c++指针内存申请与释放
+int* c=new int[n];
+delete []c;
+==================
+32位ubuntu卸载wps
+sudo apt-get purge wps-office:i386
+ 
+
