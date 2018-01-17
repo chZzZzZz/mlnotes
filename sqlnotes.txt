@@ -5,6 +5,8 @@ public static SqlConnection conn = new SqlConnection("server=.;database=MColor;u
             adapter_All.Fill(set_All, "conn");
             dGV_All.ReadOnly = false;
             dGV_All.DataSource = set_All.Tables[0];
+			
+===============================数据库表的创建和管理================================================
 //新建数据库语句（在查询分析器里执行）
 IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = 'studb' )
 	DROP DATABASE studb
@@ -22,7 +24,7 @@ LOG ON
      SIZE = 1,
      FILEGROWTH = 10%)
 	 //在数据库studb中新建表并设置主键和外键
-	 use studb
+	 use studb//定位到studb数据库
 CREATE TABLE S
      (SNO CHAR(6)  PRIMARY KEY,
      SNAME CHAR(8)  NOT NULL,
@@ -46,3 +48,76 @@ CREATE TABLE SC
                   REFERENCES S ON DELETE CASCADE,
       FOREIGN KEY(CNO)
                   REFERENCES C ON DELETE NO ACTION)
+//为数据库的表增加列和删除列
+alter table s add guest varchar(16)
+alter table s drop column guest 
+//为表撤销主键和补充主键
+alter table sc drop constraint  PK_SC
+alter table sc add constraint PK_SC PRIMARY KEY (SNO,CNO)
+//撤销外键和补充外键
+alter table sc drop constraint constraint_name
+alter table sc add constraint FK_SC_S
+FOREIGN KEY(SNO) REFERENCES S ON DELETE CASCADE
+===========================数据的插入、修改和删除更新==============================================
+//插入数据：
+insert into sc (SNO,SNAME,AGE,SEX,DNEAME)values('s10','刘海','19','M','计算机')
+//修改数据：
+update s set age = age +1
+//删除数据：
+delete from s where SNO = 's10'
+=====================================数据查询======================================================
+select SNO,SNAME FROM S WEHRE DNAME = '计算机'
+select SNO,AGE,2018-AGE AS 出生年份 FROM S 
+select * from s where AGE>20 and DNAME = '计算机' 
+select * from s where sname like '%李%'//模糊查询
+///多表连接查询
+//查看所有学生信息和他们的课程号和得分
+select S.*,SC.CNO,SC.SCORE
+from S,SC 
+where S.SNO=SC.SNO
+//对同一个表进行连接查询(一个表与自己连接)，比较绕（求出每门课的间接先行课，即它的先行课的先行课）
+SELECT FIRST.CNO,SECOND.PRE_CNO                      c表数据  CNO  CNAME CREDIT  PRE_CNO
+          FROM C AS FIRST,                                     C1                 
+               C AS SECOND//断点                               C2                  C1
+WHERE FIRST.PRE_CNO=SECOND.CNO                                 C3                  C1
+                                                               C4                  C2
+///集合查询
+//查询选修了课程代号C4或C2的学生的学号和姓名
+SELECT S.SNO,S.SNAME
+      FROM S,SC
+WHERE S.SNO=SC.SNO AND CNO = 'C4'
+UNION
+SELECT S.SNO,S.SNAME
+      FROM S,SC
+WHERE S.SNO=SC.SNO AND CNO = 'C2'
+///嵌套查询
+//查询选修了电子学课程的学生学号和姓名 s表中是学生的信息，c表是课程信息，sc表是学生的成绩单
+SELECT SNO,SNAME 
+       FROM S
+WHERE SNO IN
+(SELECT SNO 
+        FROM SC
+WHERE CNO IN
+(SELECT CNO 
+        FROM C
+WHERE CNAME='电子学'))
+//使用exist查询
+SELECT SNAME
+FROM S
+WHERE EXISTS
+(SELECT * 
+FROM SC
+WHERE S.SNO=SC.SNO AND CNO='C4')
+==============================================聚合函数=============================================
+select AVG(SCORE) FROM SC//计算分数平均值
+SELECT COUNT(DISTINCT CNO) FROM C//计算课程的个数
+SELECT CNO,COUNT(SNO) FROM SC GROUP BY CNO//利用group by查询选修课的课程号和选修该课程的人数
+SELECT SNO FROM SC GROUP BY SNO HAVING COUNT(*)>1//利用having语句挑选sno重复超过1次的sno
+SELECT SNO,SCORE FROM SC ORDER BY SCORE DESC//ORDER排序语句
+//按课程号排序统计各门课程的最高、最低和平均成绩
+SELECT CNO,MAX(SCORE) AS MAX,MIN(SCORE) AS MIN,AVG(SCORE) AS AVG
+FROM SC
+GROUP BY CNO
+HAVING CNO NOT IN
+(SELECT CNO FROM SC WHERE SCORE IS NULL)
+ORDER BY CNO 
