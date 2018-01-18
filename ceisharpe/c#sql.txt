@@ -1,0 +1,134 @@
+ ======================================链接数据库==================================================
+ public SqlConnection conn = new SqlConnection("server=.;database=test;uid=sa" + ";pwd=sa");
+ ==================================DATAGRIDVIEW显示控件==============================================
+SqlDataAdapter adapter_All = new SqlDataAdapter("select * from test_data", conn);//创建SqlDataAdapter对象
+DataSet set_All = new DataSet();//创建DataSet对象
+adapter_All.Fill(set_All, "conn");//使用SqlDataAdapter对象的Fill方法填充数据集Dataset
+dGV1.DataSource = set_All.Tables[0];//设置datagridview控件数据源
+===========================使用SqlCommand执行SQL语句=================================================
+ conn.Open();
+            string Sm1 = "insert into test_Data" + " values('" + 5 + "','" + "小绿" + "','" + 20 + "','" + 5 + "')";
+            SqlCommand command1 = new SqlCommand(Sm1, conn);
+            command1.ExecuteNonQuery();
+conn.Close();
+===========================判断datagridview数据表的checkbox是否被勾选==============================
+ int m = 0;
+            for (int i = 0; i < dGV_Del.Rows.Count; i++)
+            {
+                if (Convert.ToBoolean(dGV_Del.Rows[i].Cells[0].EditedFormattedValue) == true)
+                {
+                    m++;
+                }
+                if (m >= 1)
+                {
+                    break;
+                }
+            }
+            if (m == 0)
+            {
+
+                MessageBox.Show("请选择数据");
+                return;
+
+            }
+===========================将datagridview表中选中的行数据插入到数据库中对应的表中==================
+for (int i = 0; i < dGV_All.Rows.Count; i++)
+            {
+
+                if (Convert.ToBoolean(dGV_All.Rows[i].Cells[0].EditedFormattedValue) == true && Convert.ToInt32(dGV_All.Rows[i].Cells[6].Value) != 3)
+                {
+                    double[] data = new double[6];
+                    for (int j = 2; j < 6; j++)
+                    {
+                        data[j] = Convert.ToDouble(this.dGV_All.Rows[i].Cells[j].Value);
+                    }
+                    data[1] = Convert.ToDouble(this.dGV_All.Rows[i].Cells[1].Value);//序号
+                    //在total_Data_1中添加数据
+                    string Sm1 = "insert into total_Data_1" + " values('" + data[1] + "','" + data[2] + "','" + data[3] + "','" + data[4] + "','" + data[5] + "' ,'" + 0 + "')";
+                    SqlCommand command1 = new SqlCommand(Sm1, QuanJu.conn);
+                    command1.ExecuteNonQuery();
+                    string Sm2 = "insert divide_Data" + " values('" + data[1] + "','" + data[2] + "','" + data[3] + "','" + data[4] + "','" + data[5] + "' ,'" + 0 + "')";
+                    SqlCommand command2 = new SqlCommand(Sm2, QuanJu.conn);
+                    command2.ExecuteNonQuery();
+
+                    // 更改数据的状态为3
+                    SqlCommand command3;
+                    string Sm3 = "update SourceData" + " set [状态] = '" + 3 + "' where [序号]='" + data[1] + "'";
+                    command3 = new SqlCommand(Sm3, QuanJu.conn);
+                    command3.ExecuteNonQuery();
+                    dGV_All.Rows[i].Cells[0].Value = null;
+
+                }
+                else if (Convert.ToBoolean(dGV_All.Rows[i].Cells[0].EditedFormattedValue) == true && Convert.ToInt32(dGV_All.Rows[i].Cells[6].Value) == 3)
+                {
+                    MessageBox.Show("该数据已在样本数据库中，请勿重复插入！");
+                    break;
+                }
+            }
+==========================================切割txt文件==============================================
+              int line=0;
+             StreamReader re = new StreamReader(Application.StartupPath + @"\Data\yixi_data\output_yixi_train_data.txt", Encoding.Default);
+             line = re.ReadToEnd().Split('\n').Length - 1;//行数
+			 re.close();
+——————————————————————————————————————————————————————————————————————————————————————————————————
+			 StreamReader reader = new StreamReader(Application.StartupPath + @"\Data\yixi_data\output_yixi_train_data.txt", Encoding.Default);
+			 int i = 0；
+			 while (reader.Peek() > 0 && i <= line)
+                {
+                    //读取文件output_yixi_train_data中的数据到数组set中，这个文件中只有一列数据
+                    string srt = reader.ReadLine();
+                    Regex regex = new Regex(@"(?is)(\s+)");
+                    string result = Regex.Replace(srt, @"\s+", "\t");
+                    string[] array = result.Split('\t');//以t为分隔符
+                    Set2[i] = Convert.ToDouble(array[0]);
+                    i++;
+                }
+				reader.Close();
+================================从数据库的表读出数据写入txt文件中==================================
+ string st2 = @"select 出口温度,出口压力,石脑油流量,乙烯产率 from train_data_1 ";
+ StreamWriter sw = new StreamWriter(Application.StartupPath + @"\Data\yixi_data\yixi_train_data.txt", false, Encoding.Default);
+                    SqlCommand comm = new SqlCommand();
+                    string splice;//将读出的数据进行连接
+                    comm.Connection = QuanJu.conn;
+                    comm.CommandType = CommandType.Text;
+                    comm.CommandText = st2;
+                    SqlDataReader sdr = comm.ExecuteReader();
+                    while (sdr.Read())
+                    {
+                        //数据库读出数据
+                        splice = "";
+                        splice = sdr[0].ToString() + '\t' + sdr[1].ToString() + '\t' + sdr[2].ToString() + '\t' + sdr[3].ToString() + '\t';
+                        sw.WriteLine(splice);
+                        sw.Flush();
+                    }
+                    sdr.Close();
+                    sw.Close();
+——————————————————————————————————————————————————————————————————————————————————————————————————
+ string st4 = "select count(*) from train_data_1 ";//train_data1表的行数
+                string st5 = "select count(*) from test_data_1 ";
+                string sm2 = "select count(*) from total_Data";
+                string sm3 = "select info from sysobjects where name = 'total_Data'";//total_data列数
+				 int m0;
+                int m1;
+                int m2;
+                int m3;
+
+
+                SqlCommand command0 = new SqlCommand(sm2, QuanJu.conn);//总数据行数
+                m0=Convert.ToInt32(command0.ExecuteScalar());
+                SqlCommand command1 = new SqlCommand(st4, QuanJu.conn);//训练数据
+                m1 = Convert.ToInt32(command1.ExecuteScalar());
+                SqlCommand command2 = new SqlCommand(st5, QuanJu.conn); //测试数据
+                m2 = Convert.ToInt32(command2.ExecuteScalar());
+                SqlCommand command3 = new SqlCommand(sm3, QuanJu.conn);//维数
+                m3 = Convert.ToInt32(command3.ExecuteScalar()) - 2;//维数
+                FileStream fs = new FileStream(st6, FileMode.Create, FileAccess.Write);//打开yixi_information.txt文件，将训练数据个数、测试数据个数、有效数据写入文件
+                StreamWriter write = new StreamWriter(fs);
+
+                write.WriteLine(m0.ToString());
+                write.WriteLine(m1.ToString());
+                write.WriteLine(m2.ToString());
+                write.WriteLine(m3.ToString());
+
+                write.Close();
+                fs.Close();
