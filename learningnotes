@@ -34,6 +34,10 @@ git commit -m "提交信息"
 11.查看远程主机名和fetch push地址：git remote -v
 12.git clone和git pull区别：
 git clone是将整个版本库复制到本地，git pull=git fetch + git merge即从远程主机获取最新版本branch分支并合并到本地。 
+13.使用git命令每次提交都要输入用户名和密码的解决办法
+1)git remote rm origin 
+2)git remote add origin https://username:password@github.com/username/mlnotes/
+3)git push origin master
 ======================
 #c++指针内存申请与释放
 int* c=new int[n];
