@@ -9,12 +9,17 @@ git config --global user.name "your name"
 git config --global user.email "your email" 
 7.在github上新建一个repository
 8.利用git从本地上传到github
-8.1进入所要上传文件的目录输入：git init
-8.2创建本地仓库：git remote add origin git@github.com:yourName/yourRepo.git 
+-8.1进入所要上传文件的目录输入：git init 目的是把当前目录变成git可以管理的仓库
+-8.2创建本地仓库：git remote add origin git@github.com:yourName/yourRepo.git 
 上传文件（3条指令）：
-git add xxx
+单个文件git add xxx.txt 全部文件git add -A
 git commit -m "提交信息"
-git push -u origin master
+第一次提交git push -u origin master 以后提交git push origin master
+-8.3查看是否还有未提交:git status
+查看最近日志:git log
+-8.4版本回退:回退一个:git reset -hard HEAD^
+回退两个:git reset -hard HEAD^^
+回退多个:git reset -hard HEAD~100(100即回退次数)
 9.从github克隆项目到本地
 在本地建立接受代码的文件夹，cd到这个目录，所使用的远程主机自动被个i他命名为origin
 如果想用其他主机名，需要用个git clone命令的-o选项指定。
