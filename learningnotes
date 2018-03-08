@@ -2,7 +2,7 @@
 1.安装git：sudo apt-get install git
 2.创建github账号，包括用户名，邮箱
 3. 创建ssh：ssh-keygen -t rsa -C "18829354152@163.com"
-4.在自己的github页面找到SSH Keys设置，titile随便填，将本地用户隐藏文件夹。ssh/is_rsa.pub里的字符复制到add ssh key里。
+4.在自己的github页面找到SSH Keys设置，titile随便填，将本地用户隐藏文件夹C:\Users\Apep\.ssh里的字符复制到add ssh key里。
 5.测试ssh是否成功：ssh -T git@github.com
 6.配置git的配置文件（用户名和邮箱一定要与自己注册的github账号用户名和邮箱相同）：
 git config --global user.name "your name" 
