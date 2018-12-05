@@ -74,17 +74,17 @@ class TF_MV_linearRegression()
                 self.y_hat = tf.matmul(w,self.x)+self.b
                 
             with tf.name_scope('loss'):
-                self.loss = tf.reduce_mean(tf.square(self.y,self.y_hat),name='MSE')
+                self.loss = tf.reduce_mean(tf.square(self.y-self.y_hat),name='MSE')
                 
             with tf.name_scope('train'):
                 self.train = tf.train.GradientDecentOptimizer(self.learning_rate).minimize(self.loss)
             self.init = tf.global_variables_initializer()
             self.sess = tf.Session(graph=graph)
-            self.sess.run(init)
+            self.sess.run(self.init)
     def fit(self,train_dict):
-        return sess.run([self.loss,self.w,self.b,self.train],feed_dict=train_dict)
+        return self.sess.run([self.loss,self.w,self.b,self.train],feed_dict=train_dict)
     def predictt(self,test_dict):
-        return sess.run(self.y_hat,feed_dict=test_dict)
+        return self.sess.run(self.y_hat,feed_dict=test_dict)
 ```  
 
 ###part5:train and test model
