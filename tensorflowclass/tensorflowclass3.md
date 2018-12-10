@@ -23,8 +23,8 @@ class TF_Logistic_gate():
             with tf.name_scope('train'):
                 self.train = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.loss)
             self.init = tf.global_variables_initializer()
-            self.sess = tf.Session(graph=graph)
-            self.sess.run(self.init)
+        self.sess = tf.Session(graph=graph)
+        self.sess.run(self.init)
     
     def fit(self,train_dict):
         return self.sess.run([self.loss,self.accuracy,self.train],feed_dict=train_dict)

@@ -79,8 +79,8 @@ class TF_MV_linearRegression()
             with tf.name_scope('train'):
                 self.train = tf.train.GradientDecentOptimizer(self.learning_rate).minimize(self.loss)
             self.init = tf.global_variables_initializer()
-            self.sess = tf.Session(graph=graph)
-            self.sess.run(self.init)
+        self.sess = tf.Session(graph=graph)
+        self.sess.run(self.init)
     def fit(self,train_dict):
         return self.sess.run([self.loss,self.w,self.b,self.train],feed_dict=train_dict)
     def predictt(self,test_dict):
